@@ -1,6 +1,6 @@
 Name:           fuse
 Version:        2.8.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        File System in Userspace (FUSE) utilities
 
 Group:          System Environment/Base
@@ -12,6 +12,8 @@ Patch0:         fuse-udev_rules.patch
 Patch1:         fuse-openfix.patch
 Patch2:         fuse-umount-race.patch
 Patch3:         fuse-fix-umount-regression.patch
+Patch4:         fix-signal-error-during-backport.patch
+Patch5:         add-fuse-manpages.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       kernel >= 2.6.14
 Requires:       which
@@ -57,6 +59,8 @@ sed -i 's|mknod|echo Disabled: mknod |g' util/Makefile.in
 %patch1 -p0 -b .patch1
 %patch2 -p1 -b .patch2
 %patch3 -p1 -b .patch3
+%patch4 -p1 -b .patch4
+%patch5 -p1 -b .patch5
 
 %build
 # Can't pass --disable-static here, or else the utils don't build
@@ -116,6 +120,8 @@ fi
 %{_bindir}/fusermount
 %{_bindir}/ulockmgr_server
 %config %{_sysconfdir}/udev/rules.d/99-fuse.rules
+%{_mandir}/man1/*
+%{_mandir}/man8/*
 
 %files libs
 %defattr(-,root,root,-)
@@ -133,6 +139,10 @@ fi
 %{_includedir}/fuse
 
 %changelog
+* Thu Jan  7 2016 Carlos Maiolino <cmaiolino@redhat.com> 2.8.3-5
+- Fix signal error handling (bz# 735953)
+- Add missing man pages (bz# 820171)
+
 * Thu Nov  3 2011 Josef Bacik <jbacik@redhat.com> 2.8.3-4
 - Bump version so it doesn't conflict with zstream
 
