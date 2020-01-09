@@ -1,6 +1,6 @@
 Name:           fuse
 Version:        2.8.3
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        File System in Userspace (FUSE) utilities
 
 Group:          System Environment/Base
@@ -10,6 +10,7 @@ Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.
 
 Patch0:         fuse-udev_rules.patch
 Patch1:         fuse-openfix.patch
+Patch2:         fuse-umount-race.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       kernel >= 2.6.14
 Requires:       which
@@ -53,6 +54,7 @@ pgk-config) to develop FUSE based applications/filesystems.
 sed -i 's|mknod|echo Disabled: mknod |g' util/Makefile.in
 %patch0 -p0 -b .patch0
 %patch1 -p0 -b .patch1
+%patch2 -p1 -b .patch2
 
 %build
 # Can't pass --disable-static here, or else the utils don't build
@@ -129,6 +131,12 @@ fi
 %{_includedir}/fuse
 
 %changelog
+* Fri Apr  1 2011 Josef Bacik <jbacik@redhat.com> 2.8.3-3
+- Bump the release since the bz was set to the wrong target
+ 
+* Tue Mar 29 2011 Josef Bacik <jbacik@redhat.com> 2.8.3-2
+- Fix another umount race (bz# 673250, CVE-2010-3879)
+
 * Thu Apr  8 2010 Josef Bacik <jbacik@redhat.com> 2.8.3-1
 - Rebase to 2.8.3 for bz 577927
 
