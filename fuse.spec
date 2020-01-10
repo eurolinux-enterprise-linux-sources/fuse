@@ -1,20 +1,16 @@
 Name:           fuse
 Version:        2.9.2
-Release:        11%{?dist}
+Release:        6%{?dist}
 Summary:        File System in Userspace (FUSE) utilities
 
 Group:          System Environment/Base
 License:        GPL+
-URL:            https://github.com/libfuse/libfuse
-Source0:        https://github.com/libfuse/libfuse/releases/download/fuse_2_9_4/%{name}-%{version}.tar.gz
+URL:            http://fuse.sf.net
+Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Source1:	%{name}.conf
 
 Patch1:		fuse-0001-More-parentheses.patch
 Patch2:		fuse-aarch64.patch
-Patch3:		buffer_size.patch
-Patch4:		libfuse-fix-crash-in-unlock_path.patch
-Patch5: 	fusermount-don-t-feed-escaped-commas-into-mount-opti.patch
-
 Requires:       which
 Conflicts:      filesystem < 3
 BuildRequires:  libselinux-devel
@@ -57,14 +53,11 @@ pgk-config) to develop FUSE based applications/filesystems.
 sed -i 's|mknod|echo Disabled: mknod |g' util/Makefile.in
 %patch1 -p1 -b .add_parentheses
 %patch2 -p1 -b .aarch64
-%patch3 -p1 -b .buffer_size
-%patch4 -p1 -b .unlock_path_crash
-%patch5 -p1 -b .escaped_commas
 
 %build
 # Can't pass --disable-static here, or else the utils don't build
 export MOUNT_FUSE_PATH="%{_sbindir}"
-CFLAGS="%{optflags} -D_GNU_SOURCE -fPIE -pie -Wl,-z,relro,-z,now" %configure
+CFLAGS="%{optflags} -D_GNU_SOURCE" %configure
 make %{?_smp_mflags}
 
 %install
@@ -111,21 +104,6 @@ rm -f %{buildroot}%{_sysconfdir}/udev/rules.d/99-fuse.rules
 %{_includedir}/fuse
 
 %changelog
-* Tue Jul 24 2018 Miklos Szeredi <mszeredi@redhat.com> - 2.9.2-11
-- Fixed CVE-2018-10906 (rhbz#1605159)
-
-* Fri Jan 05 2018 Miklos Szeredi <mszeredi@redhat.com> - 2.9.2-10
-- Fix crash in unlock_path() (rhbz#1527008)
-
-* Fri Oct 27 2017 Miklos Szeredi <mszeredi@redhat.com> - 2.9.2-9
-- Update URLs in specfile to point to github project
-
-* Tue May 02 2017 Carlos Maiolino <cmaiolino@redhat.com> - 2.9.2-8
-- Make buffer size match kernel max transfer size
-
-* Thu May 19 2016 Carlos Maiolino <cmaiolino@redhat.com> - 2.9.2-7
-- Enable PIE and RELRO check
-
 * Tue Jun 17 2014 Brian Foster <bfoster@redhat.com> - 2.9.2-6
 - Use kernel types not sys types.
 
