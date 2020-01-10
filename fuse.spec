@@ -1,17 +1,19 @@
 Name:           fuse
 Version:        2.9.2
-Release:        8%{?dist}
+Release:        10%{?dist}
 Summary:        File System in Userspace (FUSE) utilities
 
 Group:          System Environment/Base
 License:        GPL+
-URL:            http://fuse.sf.net
-Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+URL:            https://github.com/libfuse/libfuse
+Source0:        https://github.com/libfuse/libfuse/releases/download/fuse_2_9_4/%{name}-%{version}.tar.gz
 Source1:	%{name}.conf
 
 Patch1:		fuse-0001-More-parentheses.patch
 Patch2:		fuse-aarch64.patch
 Patch3:		buffer_size.patch
+Patch4:		libfuse-fix-crash-in-unlock_path.patch
+
 Requires:       which
 Conflicts:      filesystem < 3
 BuildRequires:  libselinux-devel
@@ -55,6 +57,7 @@ sed -i 's|mknod|echo Disabled: mknod |g' util/Makefile.in
 %patch1 -p1 -b .add_parentheses
 %patch2 -p1 -b .aarch64
 %patch3 -p1 -b .buffer_size
+%patch4 -p1 -b .unlock_path_crash
 
 %build
 # Can't pass --disable-static here, or else the utils don't build
@@ -106,6 +109,12 @@ rm -f %{buildroot}%{_sysconfdir}/udev/rules.d/99-fuse.rules
 %{_includedir}/fuse
 
 %changelog
+* Fri Jan 05 2018 Miklos Szeredi <mszeredi@redhat.com> - 2.9.2-10
+- Fix crash in unlock_path() (rhbz#1527008)
+
+* Fri Oct 27 2017 Miklos Szeredi <mszeredi@redhat.com> - 2.9.2-9
+- Update URLs in specfile to point to github project
+
 * Tue May 02 2017 Carlos Maiolino <cmaiolino@redhat.com> - 2.9.2-8
 - Make buffer size match kernel max transfer size
 
