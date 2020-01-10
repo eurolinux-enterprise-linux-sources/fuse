@@ -1,6 +1,6 @@
 Name:           fuse
 Version:        2.9.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        File System in Userspace (FUSE) utilities
 
 Group:          System Environment/Base
@@ -57,7 +57,7 @@ sed -i 's|mknod|echo Disabled: mknod |g' util/Makefile.in
 %build
 # Can't pass --disable-static here, or else the utils don't build
 export MOUNT_FUSE_PATH="%{_sbindir}"
-CFLAGS="%{optflags} -D_GNU_SOURCE" %configure
+CFLAGS="%{optflags} -D_GNU_SOURCE -fPIE -pie -Wl,-z,relro,-z,now" %configure
 make %{?_smp_mflags}
 
 %install
@@ -104,6 +104,9 @@ rm -f %{buildroot}%{_sysconfdir}/udev/rules.d/99-fuse.rules
 %{_includedir}/fuse
 
 %changelog
+* Thu May 19 2016 Carlos Maiolino <cmaiolino@redhat.com> - 2.9.2-7
+- Enable PIE and RELRO check
+
 * Tue Jun 17 2014 Brian Foster <bfoster@redhat.com> - 2.9.2-6
 - Use kernel types not sys types.
 
