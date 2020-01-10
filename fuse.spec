@@ -1,6 +1,6 @@
 Name:           fuse
 Version:        2.9.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        File System in Userspace (FUSE) utilities
 
 Group:          System Environment/Base
@@ -13,6 +13,7 @@ Patch1:		fuse-0001-More-parentheses.patch
 Patch2:		fuse-aarch64.patch
 Patch3:		buffer_size.patch
 Patch4:		libfuse-fix-crash-in-unlock_path.patch
+Patch5: 	fusermount-don-t-feed-escaped-commas-into-mount-opti.patch
 
 Requires:       which
 Conflicts:      filesystem < 3
@@ -58,6 +59,7 @@ sed -i 's|mknod|echo Disabled: mknod |g' util/Makefile.in
 %patch2 -p1 -b .aarch64
 %patch3 -p1 -b .buffer_size
 %patch4 -p1 -b .unlock_path_crash
+%patch5 -p1 -b .escaped_commas
 
 %build
 # Can't pass --disable-static here, or else the utils don't build
@@ -109,6 +111,9 @@ rm -f %{buildroot}%{_sysconfdir}/udev/rules.d/99-fuse.rules
 %{_includedir}/fuse
 
 %changelog
+* Tue Jul 24 2018 Miklos Szeredi <mszeredi@redhat.com> - 2.9.2-11
+- Fixed CVE-2018-10906 (rhbz#1605159)
+
 * Fri Jan 05 2018 Miklos Szeredi <mszeredi@redhat.com> - 2.9.2-10
 - Fix crash in unlock_path() (rhbz#1527008)
 
